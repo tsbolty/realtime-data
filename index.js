@@ -3,20 +3,30 @@ var request = require('request');
  
 var requestSettings = {
   method: 'GET',
-  url: 'https://www.rtd-denver.com/files/gtfs-rt/Alerts.pb',
+  url: 'https://www.rtd-denver.com/files/gtfs-rt/VehiclePosition.pb',
   encoding: null
 };
-request(requestSettings, function (error, response, body) {
+
+function getData(){
+return request(requestSettings, function (error, response, body) {
   if (!error && response.statusCode == 200) {
     var feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(body);
-    // console.log(feed.entity.alert)
+    console.log(feed.entity[0])
     feed.entity.forEach(function(entity) {
-      if (entity.alert) {
-        console.log(entity.alert);
+      // console.log(entity)
+      if (entity) {
+        console.log(entity);
       }
     });
   } else {
     console.log("nope")
   }
 });
+}
+
+getData()
+
+// setInterval(()=>{
+//   getData()
+// }, 30000)
 
