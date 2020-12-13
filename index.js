@@ -12,8 +12,8 @@ const connection = mysql.createConnection({
 
 connection.connect(err => {
   if (err) throw err;
-  // getData()
-  grabValues()
+  getData()
+  // grabValues()
 })
 
 const requestSettings = {
@@ -22,17 +22,19 @@ const requestSettings = {
   encoding: null
 };
 
+//DID NOT INCLUDE DIRECTION_ID OR TIMESTAMP. ALL OTHER INFO IS DONE.
+
 function getData() {
   return request(requestSettings, async function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(body);
       const rowData = feed.entity.map(entity => {
         if (entity) {
-          return `("${entity.id}", ${entity.vehicle.trip ? JSON.stringify(entity.vehicle.trip.tripId) : '"NA"'}, ${entity.vehicle.trip ? `"${entity.vehicle.trip.routeId}"` : '"NA"'}, ${entity.vehicle.trip ? entity.vehicle.trip.directionId : 99}, ${entity.vehicle.position ? entity.vehicle.position.latitude : 99.999}, ${entity.vehicle.position ? entity.vehicle.position.longitude : 99.999}, ${entity.vehicle.position ? entity.vehicle.position.bearing : 99}, ${entity.vehicle.currentStatus ? entity.vehicle.currentStatus : 99}), `
+          return `("${entity.id}", ${entity.vehicle.trip ? JSON.stringify(entity.vehicle.trip.tripId) : '"NA"'}, ${entity.vehicle.trip ? `"${entity.vehicle.trip.routeId}"` : '"NA"'}, ${entity.vehicle.trip ? entity.vehicle.trip.directionId : 99}, ${entity.vehicle.position ? entity.vehicle.position.latitude : 99.999}, ${entity.vehicle.position ? entity.vehicle.position.longitude : 99.999}, ${entity.vehicle.position ? entity.vehicle.position.bearing : 99}, ${entity.vehicle.currentStatus ? entity.vehicle.currentStatus : 99}, ${entity.vehicle.stopId ? `"${entity.vehicle.stopId}"` : '"NA"'}, ${entity.vehicle.vehicle && entity.vehicle.vehicle.id.length < 30 ? `"${entity.vehicle.vehicle.id}"` : '"NA"'}, ${entity.vehicle.vehicle ? `"${entity.vehicle.vehicle.label}"` : '"NA"'}), `
         }
       });
       const queryValues = rowData.join("").slice(0, -1).replace(/.$/, ";")
-      await connection.query(`INSERT INTO historical_position (id, trip_id, route_id, direction_id, latitude, longitude, bearing, current_status) VALUES ${queryValues}`)
+      await connection.query(`INSERT INTO historical_position (id, trip_id, route_id, direction_id, latitude, longitude, bearing, current_status, stop_id, vehicle_id, vehicle_label) VALUES ${queryValues}`)
       console.log("That shit's in the database baby!")
       process.exit()
     } else {
@@ -45,20 +47,17 @@ function grabValues() {
   return request(requestSettings, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(body);
-      const result = feed.entity[0].vehicle
-      // feed.entity.map(entity => {
-      //   if (entity.vehicle.trip){
-      //   return `('${entity.id}', ${entity.vehicle.trip ? JSON.stringify(entity.vehicle.trip.tripId) : "NA"}), `
-      // }
-      console.log(result)
-      // });
+      const result = feed.entity[0].vehicle.vehicle.id
+      feed.entity.map(entity => {
+        if (entity.vehicle.trip) {
+          return `('${entity.id}', ${entity.vehicle.trip ? JSON.stringify(entity.vehicle.trip.tripId) : "NA"}), `
+        }
+        console.log(typeof parseInt(result))
+      });
     } else {
-      console.log("nope")
+      console.log("Wrong path")
     }
   });
 }
 
-// setInterval(()=>{
-//   getData()
-// }, 30000)
 
