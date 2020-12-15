@@ -1,0 +1,5 @@
+python C:"/Users/Tyler Bolty/Desktop/personal-projects/google-realtime/transitfeed/schedule_viewer.py" [--key AIzaSyBHEIDB-6P3pJ9yo71rY726T8kErrUENH0] --feed_filename https://www.rtd-denver.com/files/gtfs/google_transit.zip
+
+
+BASH
+python C:/Users/Tyler\ Bolty/Desktop/personal-projects/google-realtime/transitfeed/schedule_viewer.py [--key AIzaSyBHEIDB-6P3pJ9yo71rY726T8kErrUENH0] --feed_filename https://www.rtd-denver.com/files/gtfs/google_transit.zip

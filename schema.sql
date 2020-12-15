@@ -18,4 +18,15 @@ CREATE TABLE historical_position (
   vehicle_label VARCHAR(4) NOT NULL
 );
 
+DELETE FROM historical_position;
 SELECT * FROM historical_position;
+
+CREATE TABLE trip_update (
+  id VARCHAR(25) PRIMARY KEY NOT NULL
+)
+
+CREATE TABLE stop_time_update (
+
+)
+
+SELECT * FROM trip_update
